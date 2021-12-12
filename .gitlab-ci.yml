@@ -1,0 +1,85 @@
+stages:
+  - test
+  - package
+  - validate
+  - deploy
+
+defaults:
+  image: alpine
+
+.helm_job:
+  image: public.ecr.aws/XXXXXXXXXXXXX/helm-runner:latest
+  rules:
+    - changes:
+      - chart/**/*
+
+test:
+  stage: test
+  script:
+    - go test
+
+image build:
+  stage: package
+  variables:
+    CI_REGISTRY_IMAGE: XXXXXXXXXXXXX.dkr.ecr.us-east-1.amazonaws.com/us-api
+  cache:
+    - key: $CI_COMMIT_REF_SLUG
+      paths:
+        - build/
+      policy: pull
+  needs: [test]
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - ls -la
+    - ls build/
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  rules:
+    - if: $CI_COMMIT_TAG
+
+helm build:
+  stage: build
+  extends: .helm_job
+  needs: [lint]
+  script:
+    - |
+      cd chart/us-api
+      helm template . > us-api.yaml
+      mv us-api.yaml ../../us-api.yaml
+  artifacts:
+    paths:
+      - us-api.yaml
+
+kubeval:
+  stage: validate
+  extends: .helm_job
+  needs: [helm build]
+  script:
+    - |
+      for kv in ${K8S_VERSIONS}
+      do
+        kubeval -v $kv --strict us-api.yaml --schema-location https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master
+      done
+
+conftest:
+  stage: validate
+  extends: .helm_job
+  needs: [helm build]
+  before_script:
+    - |
+      curl https://raw.githubusercontent.com/naquada/deprek8/master/policy/deprek8.rego > deprek8.rego
+  script:
+    - conftest test -p deprek8.rego us-api.yaml
+
+deploy:
+  stage: deploy
+  environment:
+    name: production
+  deploy_tier: production
+  when: manual
+  script:
+    - aws eks update-kubeconfig --name $CLUSTER --region $AWS_REGION
+    - helm upgrade us-api ./chart/us-api --resuse-values -f ./chart/us-api/values.prod.yaml
