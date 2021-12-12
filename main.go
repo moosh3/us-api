@@ -2,62 +2,63 @@ package main
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 // stateCodes slice to seed US State code data.
 var stateCodes = []StateCode{
-	{State: "Alabama", Abbreviation: "AL"},
-	{State: "Alaska", Abbreviation: "AK"},
-	{State: "Arizona", Abbreviation: "AZ"},
-	{State: "Arkansas", Abbreviation: "AR"},
-	{State: "California", Abbreviation: "CA"},
-	{State: "Colorado", Abbreviation: "CO"},
-	{State: "Connecticut", Abbreviation: "CT"},
-	{State: "Delaware", Abbreviation: "DE"},
-	{State: "District of Columbia", Abbreviation: "DC"},
-	{State: "Florida", Abbreviation: "FL"},
-	{State: "Georgia", Abbreviation: "GA"},
-	{State: "Hawaii", Abbreviation: "HI"},
-	{State: "Idaho", Abbreviation: "ID"},
-	{State: "Illinois", Abbreviation: "IL"},
-	{State: "Indiana", Abbreviation: "IN"},
-	{State: "Iowa", Abbreviation: "IA"},
-	{State: "Kansas", Abbreviation: "KS"},
-	{State: "Kentucky", Abbreviation: "KY"},
-	{State: "Lousiana", Abbreviation: "LA"},
-	{State: "Maine", Abbreviation: "ME"},
-	{State: "Montana", Abbreviation: "MT"},
-	{State: "Nebraska", Abbreviation: "NE"},
-	{State: "Nevada", Abbreviation: "NV"},
-	{State: "New Hampshire", Abbreviation: "NH"},
-	{State: "New Jersey", Abbreviation: "NJ"},
-	{State: "New Mexico", Abbreviation: "NM"},
-	{State: "New York", Abbreviation: "NY"},
-	{State: "North Carolina", Abbreviation: "NC"},
-	{State: "North Dakota", Abbreviation: "ND"},
-	{State: "Ohio", Abbreviation: "OH"},
-	{State: "Oklahoma", Abbreviation: "OK"},
-	{State: "Oregon", Abbreviation: "OR"},
-	{State: "Maryland", Abbreviation: "MD"},
-	{State: "Massachusetts", Abbreviation: "MA"},
-	{State: "Michigan", Abbreviation: "MI"},
-	{State: "Minnesota", Abbreviation: "MN"},
-	{State: "Missouri", Abbreviation: "MO"},
-	{State: "Pennsylvania", Abbreviation: "PA"},
-	{State: "Rhode Island", Abbreviation: "RI"},
-	{State: "South Carolina", Abbreviation: "SC"},
-	{State: "South Dakota", Abbreviation: "SD"},
-	{State: "Tennessee", Abbreviation: "TN"},
-	{State: "Texas", Abbreviation: "TX"},
-	{State: "Utah", Abbreviation: "UT"},
-	{State: "Vermont", Abbreviation: "VT"},
-	{State: "Virginia", Abbreviation: "VA"},
-	{State: "Washington", Abbreviation: "WA"},
-	{State: "West Virginia", Abbreviation: "WV"},
-	{State: "Wisconsin", Abbreviation: "WI"},
-	{State: "Wyoming", Abbreviation: "WY"},
+	{State: "alabama", Abbreviation: "AL"},
+	{State: "alaska", Abbreviation: "AK"},
+	{State: "arizona", Abbreviation: "AZ"},
+	{State: "arkansas", Abbreviation: "AR"},
+	{State: "california", Abbreviation: "CA"},
+	{State: "colorado", Abbreviation: "CO"},
+	{State: "connecticut", Abbreviation: "CT"},
+	{State: "delaware", Abbreviation: "DE"},
+	{State: "district of columbia", Abbreviation: "DC"},
+	{State: "florida", Abbreviation: "FL"},
+	{State: "georgia", Abbreviation: "GA"},
+	{State: "hawaii", Abbreviation: "HI"},
+	{State: "idaho", Abbreviation: "ID"},
+	{State: "illinois", Abbreviation: "IL"},
+	{State: "indiana", Abbreviation: "IN"},
+	{State: "iowa", Abbreviation: "IA"},
+	{State: "kansas", Abbreviation: "KS"},
+	{State: "kentucky", Abbreviation: "KY"},
+	{State: "lousiana", Abbreviation: "LA"},
+	{State: "maine", Abbreviation: "ME"},
+	{State: "montana", Abbreviation: "MT"},
+	{State: "nebraska", Abbreviation: "NE"},
+	{State: "nevada", Abbreviation: "NV"},
+	{State: "new hampshire", Abbreviation: "NH"},
+	{State: "new jersey", Abbreviation: "NJ"},
+	{State: "new mexico", Abbreviation: "NM"},
+	{State: "new york", Abbreviation: "NY"},
+	{State: "north carolina", Abbreviation: "NC"},
+	{State: "north dakota", Abbreviation: "ND"},
+	{State: "ohio", Abbreviation: "OH"},
+	{State: "oklahoma", Abbreviation: "OK"},
+	{State: "oregon", Abbreviation: "OR"},
+	{State: "maryland", Abbreviation: "MD"},
+	{State: "massachusetts", Abbreviation: "MA"},
+	{State: "michigan", Abbreviation: "MI"},
+	{State: "minnesota", Abbreviation: "MN"},
+	{State: "missouri", Abbreviation: "MO"},
+	{State: "pennsylvania", Abbreviation: "PA"},
+	{State: "rhode island", Abbreviation: "RI"},
+	{State: "south carolina", Abbreviation: "SC"},
+	{State: "south dakota", Abbreviation: "SD"},
+	{State: "tennessee", Abbreviation: "TN"},
+	{State: "texas", Abbreviation: "TX"},
+	{State: "utah", Abbreviation: "UT"},
+	{State: "vermont", Abbreviation: "VT"},
+	{State: "virginia", Abbreviation: "VA"},
+	{State: "washington", Abbreviation: "WA"},
+	{State: "west virginia", Abbreviation: "WV"},
+	{State: "wisconsin", Abbreviation: "WI"},
+	{State: "wyoming", Abbreviation: "WY"},
 }
 
 // StateCode represents data about a statecode.
@@ -83,11 +84,12 @@ func getStateCodes(c *gin.Context) {
 // parameter sent by the client, then returns that statecode as a response.
 func getStateCodeByID(c *gin.Context) {
 	state := c.Param("state")
+	stateQuery := strings.ToLower(state)
 
 	// Loop through the list of state codes, looking for
 	// a state code whose ID value matches the parameter.
 	for _, a := range stateCodes {
-		if a.State == state {
+		if a.State == stateQuery {
 			c.IndentedJSON(http.StatusOK, a.Abbreviation)
 			return
 		}

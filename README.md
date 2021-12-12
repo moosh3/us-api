@@ -7,7 +7,7 @@ does not support creating, updating nor deleting data.
 
 ```
 docker build -t us-api .
-docker run -d us-api
+docker run -d -p 8080:8080 us-api
 ```
 
 ## Deploying
