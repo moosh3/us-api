@@ -2,10 +2,8 @@
 
 ## Database
 
-Two implementations exist within this repository:
-
-1. Store the JSON within the binary due to the size and immutability of the dataset
-2. Use go-cache to store the data in a memory efficient, scalable embedded cache 
+Store the JSON within the binary due to the size and immutability of the dataset.
+The web library, Gin, handles each HTTP request as a separate Goroutine, making the retrieval of the key upon each request extremely fast and allows for up to millions of rps.
 
 ## Scalability
 
