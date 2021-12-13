@@ -82,4 +82,4 @@ deploy:
   when: manual
   script:
     - aws eks update-kubeconfig --name $CLUSTER --region $AWS_REGION
-    - helm upgrade us-api ./chart/us-api --resuse-values -f ./chart/us-api/values.prod.yaml
+    - helm upgrade us-api ./chart/us-api --resuse-values -f ./chart/us-api/values.us-api.yaml --set image.tag=$GIT_COMMIT_SHA

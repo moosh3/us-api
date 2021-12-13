@@ -7,8 +7,7 @@ The web library, Gin, handles each HTTP request as a separate Goroutine, making 
 
 - Storing the data as a model in a traditional relational database introduces unrequired complexity and additional latency
 
-- Storing the data in cache using an in-memory cache library persists the data per
-pod restarts, so additional work to add an `initContainer` for seeding data would
+- Storing the data in cache using an in-memory cache library does not persists data when a pod restarts, so additional work to add an `initContainer` for seeding data would
 be required. It also introduces an external dependency to read the data.
 
 ## Scalability

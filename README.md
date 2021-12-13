@@ -28,7 +28,7 @@ terraform apply
 Once you have access to a kubernetes cluster, you can use Helm chart within the `chart` directory to deploy the actual service.
 
 ```
-helm upgrade -i us-api ./chart/us-api
+helm upgrade -i us-api ./chart/us-api -f ./chart/us-api/values.us-api.yaml
 ```
 
 ### HA
