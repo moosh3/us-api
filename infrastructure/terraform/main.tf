@@ -32,6 +32,8 @@ module "vpc" {
   cidr                 = "10.0.0.0/16"
   azs                  = data.aws_availability_zones.available.names
   public_subnets       = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  private_subnets      = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
   enable_dns_hostnames = true
 
   public_subnet_tags = {
@@ -46,7 +48,7 @@ module "eks" {
 
   cluster_name    = local.cluster_name
   cluster_version = "1.21"
-  subnets         = module.vpc.public_subnets
+  subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
   enable_irsa     = true
 
@@ -63,18 +65,4 @@ module "eks" {
       }
     }
   }
-}
-
-module "aws_load_balancer" {
-  source = "git::https://XXXXXXXXXXXX/sre/tf-modules/aws-load-balancer.git?ref=v1.0.0"
-
-  cluster_oidc_issuer_url = data.aws_eks_cluster.cluster.identity.0.oidc.0.issuer
-  cluster_name            = data.aws_eks_cluster.cluster.id
-}
-
-module "external_dns" {
-  source = "git::https://XXXXXXXXXXXX/sre/tf-modules/aws-external-dns.git?ref=v1.0.0"
-
-  cluster_oidc_issuer_url = data.aws_eks_cluster.cluster.identity.0.oidc.0.issuer
-  cluster_name            = data.aws_eks_cluster.cluster.id
 }
