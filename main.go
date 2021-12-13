@@ -70,8 +70,8 @@ type StateCode struct {
 func main() {
 	router := gin.Default()
 
-	router.GET("/statecode", getStateCodes)
-	router.GET("/statecode/:state", getStateCodeByID)
+	router.GET("/api/v1/statecode", getStateCodes)
+	router.GET("/api/v1/statecode/:state", getStateCodeByID)
 	router.Run(":8080")
 }
 
@@ -94,5 +94,5 @@ func getStateCodeByID(c *gin.Context) {
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "state code not found"})
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "statecode not found"})
 }
